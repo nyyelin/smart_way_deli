@@ -26,6 +26,8 @@ class ScheduleController extends Controller
         $schedules=Schedule::doesntHave('pickup')->get();
         $pickups=Pickup::orderBy('id','desc')->get();
 
+        // $order = Schedule::doesntHave('pickup')->doesntHave('delivermen')->get()
+
         if($rolename=="client"){
             $user=Auth::user();
             $client=$user->client->id;

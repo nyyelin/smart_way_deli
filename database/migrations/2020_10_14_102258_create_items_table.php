@@ -28,9 +28,9 @@ class CreateItemsTable extends Migration
             $table->string('paystatus')->default(0); 
             // 0,1 (ပုံမှန်ဆို မပေးရသေးတာ)
             
-            $table->unsignedBigInteger('pickup_id');
-            $table->unsignedBigInteger('township_id');
-            $table->unsignedBigInteger('staff_id');
+            $table->unsignedBigInteger('pickup_id')->nullable();
+            $table->unsignedBigInteger('township_id')->nullable();
+            $table->unsignedBigInteger('staff_id')->nullable();
             $table->string('error_remark')->nullable();
             $table->unsignedBigInteger('sender_gate_id')->nullable();
             $table->unsignedBigInteger('sender_postoffice_id')->nullable();

@@ -32,9 +32,12 @@
             <ul class="nav nav-tabs">
               <li class="nav-item"><a class="nav-link @role('client'){{'active'}}@endrole" data-toggle="tab" href="#schedules">{{ __("Schedules")}}</a></li>
               <li class="nav-item"><a class="nav-link @role('staff'){{'active'}}@endrole" data-toggle="tab" href="#assigned">{{ __("Assigned")}}</a></li>
+              
             </ul>
             @endrole
             <div class="tab-content mt-3" id="myTabContent">
+
+              {{-- schedult --}}
               <div class="tab-pane fade @role('client'){{'active show'}}@endrole" id="schedules">
                 <div class="table-responsive">
                   <table class="table dataTable">
@@ -49,7 +52,9 @@
                       </tr>
                     </thead>
                     <tbody>
-                      @php $i=1; @endphp
+                      @php $i=1;
+                        $array = array();
+                      @endphp
                       @foreach($schedules as $row)
                       <tr>
                         <td class="align-middle">{{$i++}}</td>
@@ -61,8 +66,22 @@
                         <td class="align-middle">{{$row->quantity}}</td>
                         <td class="align-middle">
                           @role('staff')
+                            @foreach($row->items as $item)
+                              @if($item->client_id != null)
+                                @php
+                                  array_push($array, 'true')
+                                @endphp
+                              @endif
+                            @endforeach
+                          
+                            @if(count($array) == 0)
                             <a href="#" class="btn btn-sm btn-primary assign" data-id="{{$row->id}}">{{ __("Assign")}}</a>
+
                             <a href="#" class="btn btn-sm btn-info showfile" data-file="{{$row->file}}">{{ __("show file")}}</a>
+                            @else
+                            <a href="{{route('order_assign',$row->id)}}" class="btn btn-sm btn-primary">{{ __("order")}}</a>
+                            @endif
+
                           @endrole
                           @role('client')
                             @if($row->status == 0)
@@ -78,6 +97,8 @@
                   </table>
                 </div>
               </div>
+
+              {{-- assign way--}}
               <div class="tab-pane fade @role('staff'){{'active show'}}@endrole" id="assigned">
                 <div class="table-responsive">
                   <table class="table dataTable">
@@ -100,14 +121,21 @@
                         @role('staff')<td class="text-danger align-middle">{{$row->schedule->client->user->name}}</td>@endrole
                         <td class="align-middle">{{\Carbon\Carbon::parse($row->schedule->pickup_date)->format('d-m-Y')}}</td>
                         <td class="align-middle">{{$row->schedule->remark}}</td>
-                        <td class="text-danger align-middle">{{$row->delivery_man->user->name}}
-                          @foreach($data as $dd)
-                            @if($dd->id==$row->id)
-                            <span class="badge badge-info seen">seen</span>
-                            @endif
+                        
+                        <td class="text-danger align-middle">
+                           @if($row->delivery_man)
+                            {{$row->delivery_man->user->name}}
+                            @foreach($data as $dd)
+                              @if($dd->id==$row->id)
+                              <span class="badge badge-info seen">seen</span>
+                              @endif
 
-                           @endforeach
+                             @endforeach
+                          @else
+                              {{count($row->items)}} Men
+                          @endif
                         </td>
+                        
                         <td class="align-middle">{{$row->schedule->quantity}}</td>
                         <td class="align-middle">
                           @if($row->status==1 && $row->schedule->quantity > count($row->items))
@@ -142,6 +170,8 @@
                   </table>
                 </div>
               </div>
+
+              
             </div>
           </div>
         </div>

@@ -20,4 +20,10 @@ class Schedule extends Model
   {
     return $this->hasOne('App\Pickup');
   }
+
+  public function items($value='')
+  {
+    return $this->hasMany('App\Item');
+    
+  }
 }

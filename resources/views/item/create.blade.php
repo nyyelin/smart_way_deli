@@ -122,7 +122,7 @@
 
                 <div class="form-group">
                   <label for="InputDeposit">{{ __("Deposit")}}:</label>
-                  <input class="form-control" id="InputDeposit" type="number" name="deposit" value="@if($pickupeditem){{ $pickupeditem->deposit }}@else {{old('deposit')}} @endif">
+                  <input class="form-control" id="InputDeposit" type="number" name="deposit" value="@if($pickupeditem){{ $pickupeditem->item_price }}@else {{old('deposit')}} @endif">
                   <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
                 </div>
 

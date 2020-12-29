@@ -18,7 +18,7 @@ class Township extends Model
 
   public function delivery_men()
   {
-    return $this->belongsToMany('App\DeliveryMan');
+    return $this->belongsToMany('App\DeliveryMan','delivery_man_township','township_id','delivery_men_id')->withTimeStamps();
   }
 
   public function clients()

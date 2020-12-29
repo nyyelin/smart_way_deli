@@ -72,7 +72,7 @@
                             <span class="badge badge-warning">{{ __("date changed")}}</span>
                           @endif
                         </td>
-                        <td class="align-middle">{{number_format($row->deposit)}}</td>
+                        <td class="align-middle">{{number_format($row->item_price)}}</td>
                         <td class="align-middle">{{number_format($row->delivery_fees)}}</td>
                         <td class="align-middle">{{number_format($row->other_fees)}}</td>
                         <td class="mytd align-middle">
@@ -135,8 +135,10 @@
                            @endforeach
                         </td>
                         <td class="align-middle">{{$way->item->expired_date}}</td>
-                        <td class="align-middle">{{number_format($way->item->deposit)}}</td>
-                        <td class="align-middle">{{number_format($way->item->delivery_fees)}}</td>
+                        <td class="align-middle">{{number_format($way->item->item_price)}}</td>
+                        <td class="align-middle">{{number_format($way->item->delivery_fees)}}<br>
+                          @if($way->item->paystatus == '1') <span span class="badge badge-dark">FOC</span> @endif</td>
+
                         <td class="align-middle">{{number_format($way->item->other_fees)}}</td>
                         <td class="mytd align-middle">
                           <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$way->item->id}}">{{ __("Detail")}}</a>
@@ -312,6 +314,8 @@
             "bInfo": true,
             "bAutoWidth": true,
             "bStateSave": true,
+            "bprocessing":true,
+            "bserverSide":true,
             "aoColumnDefs": [
                 { 'bSortable': false, 'aTargets': [ -1,0] }
             ]

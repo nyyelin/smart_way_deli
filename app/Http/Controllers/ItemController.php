@@ -100,10 +100,10 @@ class ItemController extends Controller
         $item->receiver_phone_no=$request->receiver_phoneno;
         $item->township_id=$request->receiver_township;
         $item->expired_date=$request->expired_date;
-        $item->deposit=$request->deposit;
+        $item->item_price=$request->deposit;
         $item->delivery_fees=$request->delivery_fees;
         $item->other_fees=$request->othercharges;
-        $item->amount =$request->amount;
+        // $item->amount =$request->amount;
         $item->paystatus=$request->amountstatus;
         $item->remark=$request->remark;
         $item->pickup_id=$request->pickup_id;
@@ -331,19 +331,23 @@ class ItemController extends Controller
         //dd($checktime);
         $array = explode('-', $mytime->toDateString());
         $datecode=$array[2]."001";
-        
+        // dd($array);
         // dd($datecode);
         // $items=Item::all();
         $item=Item::whereDate('created_at',Carbon\Carbon::today())->orderBy('id','desc')->first();
+
+
         //dd($item);
         if(!$item){
            $itemcode=$codeno.$datecode;
            // dd($itemcode);
         }else{
         $code=$item->codeno;
+        
         $mycode=substr($code, 11,14);
-        //dd($mycode);
-        $itemcode=$codeno.$array[2].$mycode+1;
+        // dd($mycode);
+        // dd((int)$mycode);
+        $itemcode=$codeno.$array[2].($mycode+1);
             
         }
         //dd($itemcode);
@@ -378,7 +382,7 @@ class ItemController extends Controller
 
     public function assignWays(Request $request)
     {
-        //dd($request);
+        
         $myways=$request->ways;
         //dd($myways);
         foreach($myways as $myway){
@@ -403,7 +407,7 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
 
 
     public function updatewayassign(Request $request){
-        $id=$request->wayid;
+          $id=$request->wayid;
 
             $way=Way::find($id);
             $way->delivery_man_id=$request->delivery_man;
@@ -445,8 +449,8 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
 
        $item=Item::find($value["id"]);
        $deliveryfee=$item->delivery_fees;
-       $item->deposit=$value["amount"];
-       $item->amount=$value["amount"]+$deliveryfee;
+       $item->item_price=$value["amount"];
+       // $item->amount=$value["amount"]+$deliveryfee;
        $item->save();
 
        $pickup=Pickup::find($item->pickup_id);
@@ -497,4 +501,9 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
      return $lastamount;
 
     }
+
+
+
+
+
 }

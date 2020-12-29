@@ -137,7 +137,7 @@
                     <th>Customer Name</th>
                     <th>Delivered Date</th>
                     <th>Delivery Fees</th>
-                    <th>Deposit</th>
+                    <th>Price</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -156,7 +156,7 @@
                   <option value="${v.id}">${v.name}</option>`
                 })
                 $("#bank").html(hh);
-          console.log(response.ways)
+          // console.log(response.ways)
           for(let row of response.ways){
             console.log(row);
             total+=Number(row.item.item_amount);
@@ -282,6 +282,7 @@
     })
 
     function thousands_separators(num){
+      console.log(num);
       var num_parts = num.toString().split(".");
       num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       return num_parts.join(".");

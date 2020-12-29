@@ -474,9 +474,10 @@ public function profit(Request $request){
             // ->where('status_code', '006') // 006 => deliveryman နဲ့ရှင်းပြီး
             ->where('status_code', '!=', '005')
             ->get();
+            
 
     $ways =  SuccesswayResource::collection($ways);
-    //dd($ways);
+    // dd($ways);
     return Response::json(array(
            'ways' => $ways,
            'paymenttypes' => $paymenttypes,
@@ -767,7 +768,7 @@ public function profit(Request $request){
   }
    public function retuenDeliver(Request $request)
   {
-    //dd($request);
+    // dd($request);
      $request->validate([
             'remark' => 'required',
             'date' => 'required'
@@ -776,12 +777,13 @@ public function profit(Request $request){
       $mytime = Carbon\Carbon::now();
       //dd($ways);
       $way = Way::where('id',$wayid)->first();
-      //dd($way);
+      // dd($way);
       $way->status_id = 2;
       $way->status_code = '002';
       $way->remark = $request->remark;
+      $way->refund_date = $request->date;
       $way->save();
-      $way->delete();
+      // $way->delete();
       $way->item->expired_date = $request->date;
       $way->item->error_remark = $request->remark;
       $way->item->save();
@@ -1122,4 +1124,72 @@ public function profit(Request $request){
 
     return $ways;
   }
+
+
+
+  // for report
+  public function report($value='')
+  {
+
+    $clients = Client::all();
+    return view('report.index',compact('clients'));
+  }
+
+
+  public function report_search(Request $request)
+  {
+    // dd($request);
+    $date = $request->date;
+    $client_id = $request->client_id;
+
+    $schedule = Schedule::where('status',1)->where('pickup_date',$date)->where('client_id',$client_id)->with(array('client'=>function($query){
+      $query->with('user')->get();
+    }))->with(array('items'=>function($q){
+      $q->with('way')->get();
+    }))->get();
+
+    // $way = Way::where('delivery_date',$date)->with(array('item'=>function($q) use ($client_id){
+    //   $q->where('client_id',$client_id)->get();
+    //   $q->with(array('client'=>function($query){
+    //     $query->with('user')->get();
+    //   }))->get();
+    // }))->get();
+    // dd($schedule);
+
+   return response()->json($schedule);
+
+
+  }
+
+
+  public function cleint_daily_report(Request $request)
+  {
+    
+    
+    return view('report.client_daily_report');
+  }
+
+
+  public function client_report_search(Request $request)
+  {
+    $date = $request->date;
+    $client_id = $request->client_id;
+
+      $schedule = Schedule::where('status',1)->where('pickup_date',$date)->where('client_id',Auth::user()->client->id)->with(array('client'=>function($query){
+        $query->with('user')->get();
+      }))->with(array('items'=>function($q){
+        $q->with('way')->get();
+      }))->get();
+     return response()->json($schedule);
+
+  }
+
+
+
+
+
+
+
+
+
 }

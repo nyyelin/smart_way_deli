@@ -124,7 +124,7 @@
 
                 <div class="form-group">
                   <label for="InputDeposit">Deposit:</label>
-                  <input class="form-control" id="InputDeposit" type="number" name="deposit" value="{{$item->deposit}}">
+                  <input class="form-control" id="InputDeposit" type="number" name="deposit" value="{{$item->item_price}}">
                   <div class="form-control-feedback text-danger"> {{$errors->first('deposit') }} </div>
                 </div>
 

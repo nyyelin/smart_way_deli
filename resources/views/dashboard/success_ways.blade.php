@@ -169,7 +169,7 @@
           <p class="card-text">
            Client {{ __("Phone No")}}: {{$row->item->pickup->schedule->client->phone_no}}
           </p>
-            <p class="card-text">Amount: {{$row->item->amount}}</p>
+            <p class="card-text">Amount: {{$row->item->item_price}} KS</p>
             @if($row->income==null)
             <a href="{{route('normal',$row->id)}}" class="btn btn-warning">{{ __("Edit")}}</a>
             @endif

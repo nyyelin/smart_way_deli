@@ -128,6 +128,27 @@ Route::middleware('auth')->group(function () {
   Route::get('pickups','MainController@pickups')->name('pickups');
   Route::post('pickups','MainController@donepickups')->name('donepickups');
   Route::post('delichargebytown','ItemController@delichargebytown')->name('delichargebytown');
+  Route::resource('client_items', 'ClientItemController');
+  Route::post('client_order','ClientItemController@client_order')->name('client_order');
+  Route::get('order_assign\{id}','ClientItemController@order_assign')->name('order_assign');
+  Route::post('deliverymanbytownship','ClientItemController@deliverymanbytownship')->name('deliverymanbytownship');
+  Route::post('order_assign_store\{id}','ClientItemController@order_assign_store')->name('order_assign_store');
+
+
+  // For Report
+  Route::get('report','MainController@report')->name('report');
+  Route::post('report_search','MainController@report_search')->name('report_search');
+  Route::get('cleint_daily_report','MainController@cleint_daily_report')->name('cleint_daily_report');
+  Route::post('client_report_search','MainController@client_report_search')->name('client_report_search');
+
+
+
+
+  // Route::get('client_item_create','ItemController@client_item_create')->name('client_item_create');
+  // Route::post('client_item_edit/{id}','ItemController@client_item_edit')->name('client_item_edit');
+
+
+
   // Route::get('ways','MainController@ways')->name('ways');
 
   Route::prefix('ways')->group(function () {

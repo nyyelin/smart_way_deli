@@ -147,6 +147,10 @@
          <li>
            <a class="app-menu__item {{ Request::is('banktransfer') ? 'active' : '' }}" href="{{route('banktransfer')}}"><i class="app-menu__icon fa fa-list-alt" aria-hidden="true"></i><span class="app-menu__label">{{ __("Banks Transfer")}}</span></a>
          </li>
+
+         <li>
+           <a class="app-menu__item {{ Request::is('report') ? 'active' : '' }}" href="{{route('report')}}"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">{{ __("Report")}}</span></a>
+         </li>
         @endrole
 
         <!-- For Staff -->
@@ -162,6 +166,10 @@
         <li><a class="app-menu__item {{ Request::is('incomes*') ? 'active' : '' }}" href="{{route('incomes')}}"><i class="app-menu__icon fa fa-files-o"></i><span class="app-menu__label">{{ __("Income")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('expenses*') ? 'active' : '' }}" href="{{route('expenses.index')}}"><i class="app-menu__icon fa fa-files-o"></i><span class="app-menu__label">{{ __("Expense")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('pickup_history') ? 'active' : '' }}" href="{{route('pickup_history')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Pickup History")}}</span></a></li>
+
+         <li>
+           <a class="app-menu__item {{ Request::is('report') ? 'active' : '' }}" href="{{route('report')}}"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">{{ __("Report")}}</span></a>
+         </li>
         @endrole
 
         <!-- For Delivery Men -->
@@ -171,7 +179,7 @@
         <li class="treeview {{ Request::is('ways/*') ? 'is-expanded' : '' }}"><a class="app-menu__item" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-hourglass-end"></i></i><span class="app-menu__label">{{ __("Way List")}}</span><i class="treeview-indicator fa fa-angle-right"></i></a>
           <ul class="treeview-menu">
             <li><a class="treeview-item {{ Request::is('ways/pending*') ? 'active' : '' }}" href="{{route('pending_ways')}}"><i class="icon fa fa-circle-o"></i> {{ __("Pending Ways")}}</a></li>
-            <li><a class="treeview-item {{ Request::is('ways/success*') ? 'active' : '' }}" href="{{route('success_ways')}}"><i class="icon fa fa-circle-o"></i> {{ __("Success Ways")}}</a></li>
+            <li><a class="treeview-item {{ Request::is('ways/success*') ? 'active' : '' }}" href="{{route('success_ways')}}"><i class="app-menu__icon icon fa fa-circle-o"></i> {{ __("Success Ways")}}</a></li>
           </ul>
         </li>
         @endrole
@@ -182,6 +190,12 @@
         <li><a class="app-menu__item {{ Request::is('cancel*') ? 'active' : '' }}" href="{{route('cancel.index')}}"><i class="app-menu__icon fa fa-calendar-check-o"></i><span class="app-menu__label">{{ __("Cancel List")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('debt_list') ? 'active' : '' }}" href="{{route('debt_list')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Debit List")}}</span></a></li>
         <li><a class="app-menu__item {{ Request::is('pickup_history') ? 'active' : '' }}" href="{{route('pickup_history')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Pickup History")}}</span></a></li>
+        
+        <li><a class="app-menu__item {{ Request::is('client_items*') ? 'active' : '' }}" href="{{route('client_items.index')}}"><i class="app-menu__icon fas fa-shopping-cart "></i></i><span class="app-menu__label">{{ __("Item")}}</span></a></li>
+
+         <li>
+           <a class="app-menu__item {{ Request::is('cleint_daily_report') ? 'active' : '' }}" href="{{route('cleint_daily_report')}}"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">{{ __("Report")}}</span></a>
+         </li>
         @endrole
 
       </ul>

@@ -213,7 +213,7 @@
           </p>
           <p class="card-text">
             @if($row->item->paystatus==1)
-              {{ __("Amount")}}: {{$row->item->amount}} Ks
+              {{ __("Amount")}}: {{$row->item->item_price}} Ks
              {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
             @else
              <span class="badge badge-success">All Paid!</span>
@@ -524,7 +524,7 @@
           </p>
           <p class="card-text">`
             if(v.item.paystatus==1){
-             html+= `Amount: ${v.item.amount}Ks`
+             html+= `Amount: ${v.item.item_price}Ks`
            }
              {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
             else
@@ -599,7 +599,7 @@
           </p>
           <p class="card-text">`
             if(v.item.paystatus==1){
-             html+= `Amount: ${v.item.amount}Ks`
+             html+= `Amount: ${v.item.item_price}Ks`
            }
              {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
             else
@@ -674,7 +674,7 @@
           </p>
           <p class="card-text">`
             if(v.item.paystatus==1){
-             html+= `Amount: ${v.item.amount}Ks`
+             html+= `Amount: ${v.item.item_price}Ks`
            }
              {{-- <span class="badge badge-success">ma shin ya thay</span> --}}
             else

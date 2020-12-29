@@ -46,7 +46,7 @@
                       <td>{{$row->township->name}}</td>
                       <td>{{$row->receiver_phone_no}}</td>
                       <td>{{$row->remark}}</td>
-                      <td class="mytd"><input type="number" class="form-control checkitemamount{{$j++}}" name="amount" value="@if($row->deposit){{$row->deposit}}@else{{0}}@endif"  data-id="{{$row->id}}" @if($row->deposit == null){{'readonly'}}@endif></td>
+                      <td class="mytd"><input type="number" class="form-control checkitemamount{{$j++}}" name="amount" value="@if($row->item_price){{$row->item_price}}@else{{0}}@endif"  data-id="{{$row->id}}" @if($row->item_price == null){{'readonly'}}@endif></td>
                       @endforeach
                       
                     </tr>
@@ -218,15 +218,16 @@
     $('.saveBtn').click(function () {
       var count=$("#count").val();
       var totaldeposit=$("#totaldeposit").val()
-      //console.log(totaldeposit);
+      // console.log(count);
 
       var myarray=[];
       for(var i=1;i<=count;i++){
         var oTable = $('#checktable').dataTable();
         // console.log(oTable);
         var rowcollection =  oTable.$(".checkitemamount"+i, {"page": "all"});
-        //console.log(rowcollection);
+        // console.log(rowcollection);
         rowcollection.each(function(index,elem){
+          console.log(elem);
           var checkamount=$(elem).val();
           var checkid=$(elem).data('id');
           //console.log(checkid);
@@ -243,8 +244,10 @@
       var total=0;
      // console.log(myarray);
       myarray.forEach( function(v, i) {
+        // console.log(v);
        total+=parseInt(v.amount);
       });
+      console.log(total+'/'+totaldeposit);
       //alert(total);
 
       if(totaldeposit==total){
