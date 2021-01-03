@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
 use App\Bank;
+use Yajra\DataTables\Facades\DataTables;
 use App\Transaction;
 
 class ItemController extends Controller
@@ -500,6 +501,20 @@ return redirect()->route('items.index')->with("successMsg",'way assign successfu
 
      return $lastamount;
 
+    }
+
+     public function newitem(){
+       $items=Item::with("pickup.schedule.client.user")->with("township")->whereHas('pickup',function($query){
+              $query->where('status',1);
+            })
+            ->doesntHave('way')
+            ->get();
+      return Datatables::of($items)->addIndexColumn()->toJson();
+    }
+
+    public function onway(){
+       $ways = Way::orderBy('id', 'desc')->with('item.township')->with("delivery_man.user")->whereDate('created_at', Carbon\Carbon::today())->get();
+       return Datatables::of($ways)->addIndexColumn()->toJson();
     }
 
 

@@ -54,9 +54,9 @@
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="client_data_show">
                       
-                      @foreach($items as $item)
+                      {{-- @foreach($items as $item)
                       @php
                         $a = strtotime($item->expired_date);
                         $date = date('d-m-Y',$a);
@@ -90,7 +90,7 @@
                         </td>
                         <td class="align-middle">{{$item->item_qty}}</td>
                         <td class="align-middle">
-                          <a href="javascript:void(0)" class="btn btn-sm btn-primary detail" data-id="{{$item->id}}" data-item_name = "{{$item->item_name}}" data-price = "{{$item->item_price}}">{{ __("Detail")}}</a>
+                          <a href="javascript:void(0)" class="btn btn-sm btn-primary detail" data-id="{{$item->id}}" data-item_name = "{{$item->item_name}}" data-price = "{{$item->item_price}}" data-qty="{{$item->item_qty}}" data-receiver_name = "{{$item->receiver_name}}" data-receiver_phoneno = "{{$item->receiver_phone_no}}" data-receiver_address = "{{$item->receiver_address}}" data-remark = "{{$item->remark}}">{{ __("Detail")}}</a>
 
                           <a href="{{route('client_items.edit',$item->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                           <form action="{{ route('client_items.destroy',$item->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
@@ -101,7 +101,7 @@
                         </td>
                       </tr>
 
-                      @endforeach
+                      @endforeach --}}
                      
                     </tbody>
                   </table>
@@ -166,6 +166,32 @@
     </div>
   </div>
 
+  {{-- item detail modal --}}
+  <div class="modal fade" id="itemDetailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title rcode" id="exampleModalLabel"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><strong>{{ __("Receiver Name")}}:</strong> <span id="rname" class="receiver_name"></span></p>
+          <p ><strong >{{ __("Receiver Phone No")}}:</strong> <span id="rphone" class="receiver_phoneno"></span></p>
+          <p><strong >{{ __("Receiver Address")}}:</strong><span id="raddress" class="receiver_address"></span></p>
+          <p><strong>{{ __("Remark")}}:</strong> <span class="text-danger remark" id="rremark"></span></p>
+
+          <p id="error_remark" class="d-none"></p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __("OK")}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 </main>
 @endsection
@@ -175,21 +201,24 @@
 @section('script')
 <script type="text/javascript">
   $(document).ready(function() {
+    getdata();
     setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
-    $('#checktable').dataTable({
-        "bPaginate": true,
-        "bLengthChange": true,
-        "bFilter": true,
-        "bSort": true,
-        "bInfo": true,
-        "bAutoWidth": true,
-        "bStateSave": true,
-        "bprocessing":true,
-        "bserverSide":true,
-        "aoColumnDefs": [
-            { 'bSortable': false, 'aTargets': [ -1,0] }
-        ]
-    });
+   
+
+
+    $('.detail').click(function(){
+      var receiver_name = $(this).data('receiver_name');
+      var receiver_phoneno = $(this).data('receiver_phoneno');
+      var receiver_address = $(this).data('receiver_address');
+      var remark = $(this).data('remark');
+
+      $('.receiver_name').text(receiver_name);
+      $('.receiver_phoneno').text(receiver_phoneno);
+      $('.receiver_address').text(receiver_address);
+      $('.remark').text(remark);
+
+      $('#itemDetailModal').modal('show');
+    })
 
 
 
@@ -222,6 +251,88 @@
       
 
     })
+
+
+     
+      function getdata(){   
+        var url="{{route('client_new_item')}}";
+        var i=1;
+        $('#checktable').dataTable({
+          "bPaginate": true,
+          "bLengthChange": true,
+          "bFilter": true,
+          "bSort": true,
+          "bInfo": true,
+          "bAutoWidth": true,
+          "bStateSave": true,
+          "aoColumnDefs": [
+          { 'bSortable': false, 'aTargets': [ -1,0] }
+          ],
+          "bserverSide": true,
+          "bprocessing":true,
+          "ajax": {
+            url: url,
+            type: "GET",
+            dataType:'json',
+          },
+          "columns": [
+
+         
+          {"data": null,
+          render:function(data, type, full, meta){
+
+            return`<div class="animated-checkbox">
+            <label class="mb-0">
+            <input type="checkbox" name="assign[]" value="${data.id}" data-codeno="${data.codeno}" data-qty = "${data.item_qty}" data-price = "${data.item_price}"><span class="label-text"> </span>
+            </label>
+            </div>`
+          }
+        },
+        {"data":"codeno"},
+        
+        {
+          "data":"item_name"
+        },
+        
+        {
+          "data":null,
+          render:function(data, type, full, meta){
+
+            return`${data.receiver_name} <span class="badge badge-dark">${data.receiver_phone_no}</span>`
+          }
+        },
+
+        {
+          "data":"receiver_address",
+        },
+
+        {
+          "data":"expired_date",
+        },
+
+        {
+          "data":"item_price",
+          
+        },
+
+        {
+          "data":"item_qty",
+        },
+
+        {
+          "data":null,
+          render:function(data, type, full, meta){
+           var editurl="{{route('items.edit',":id")}}"
+           editurl=editurl.replace(':id',data.id);
+           return`<a href="#" class="btn btn-primary detail" data-id="${data.id}">{{ __("Detail")}}</a> <a href="${editurl}" class="btn btn-warning">{{ __("Edit")}}</a>`
+         }
+       }
+
+       ],
+       "info":false
+     });
+        
+      }
 
 
   })

@@ -24,6 +24,7 @@
                         <th>{{ __("Township")}}</th>
                         <th>{{__("Receiver Name")}}</th>
                         <th>{{__("Receiver Phone No")}}</th>
+                        
                         <th>{{ __("Way State")}}</th>
                         <th>{{ __("Amount")}}</th>
                       </tr>
@@ -31,7 +32,7 @@
               <tbody>
                 @php $i=1;$total=0; @endphp
                 @foreach($items as $row)
-                @php $total+=$row->deposit @endphp
+                @php $total+=$row->item_price @endphp
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{$row->codeno}}</td>
@@ -62,7 +63,7 @@
                     @endif
 
                   </td>
-                  <td>{{$row->deposit}}</td>
+                  <td>{{$row->item_price}}</td>
                 </tr>
                 @endforeach
                 <tr>

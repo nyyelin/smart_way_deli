@@ -63,7 +63,8 @@
         var total=0;
         var return_data = '';
         var array=new Array();
-
+        var amount = 0;
+        var refund_data = '';
         $.post('client_report_search',{date:date},function(res){
              
           
@@ -91,9 +92,58 @@
                     
 
                     total += schedule.amount-(deli_fee+other_charge+service_charge);
+                    amount+=schedule.amount;
+
+                    
+
+                      $.each(schedule.items,function(a,b){
+                        if(b.way && b.way.status_code == '002'){
+                            refund_data += `
+                            <h3>Return list</h3>
+                            <div class="row mx-auto mt-3">
+                              <div class="col-md-12">
+                                <table class="table ">
+                                  <thead>
+                                    <tr>
+
+                                      <th>#</th>
+                                      <th>Codeno</th>
+                                      <th>Item Name</th>
+                                      <th>Price * Qty</th>
+                                      <th>Reciver info</th>
+                                      <th>Action</th>
+                                      
+                                      
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>#</td>
+                                      <td>${b.codeno}</td>
+                                      <td>${b.item_name}</td>
+                                      <td>${b.item_price}*${b.item_qty}</td>
+                                      <td>
+                                        ${b.receiver_name}<br>
+                                        <span class="badge badge-dark">${b.receiver_phone_no}</span>
+                                      </td>
+                                      <td> <h1 class="badge badge-danger">return</h1></td>
+
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                            `;
+                        }
+                      })
+
+                      
+            
+              }
+            })
 
 
-                    client_show += `
+                client_show += `
                     <div class="col-md-10 mx-auto">
                       <div class="card">
                         <div class="card-body">
@@ -115,66 +165,26 @@
                               <tbody>
                                 <tr>
                                   <td>#</td>
-                                  <td>${schedule.amount}</td>
+                                  <td>${amount}</td>
                                   <td>${service_charge}</td>
                                   <td>${deli_fee}</td>
                                   <td>${other_charge}</td>
-                                  <td> <h1 class="badge badge-info">${total}</h1></td>
+                                  <td> <h4 class="text-info">${total}</h4></td>
 
                                 </tr>
                               </tbody>
                             </table>
                           </div>
-                        </div>`;
+                        </div>
+                        ${refund_data}
+                        `;
 
-
-                      $.each(schedule.items,function(a,b){
-                        if(b.way && b.way.status_code == '002'){
-                            client_show += `
-                            <h3>Return list</h3>
-                            <div class="row mx-auto mt-3">
-                              <div class="col-md-12">
-                                <table class="table ">
-                                  <thead>
-                                    <tr>
-
-                                      <th>#</th>
-                                      <th>Codeno</th>
-                                      <th>Item Name</th>
-                                      <th>Price * Qty</th>
-                                      <th>Reciver info</th>
-                                      <th>Refund Date</th>
-                                      
-                                      
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td>#</td>
-                                      <td>${b.codeno}</td>
-                                      <td>${b.item_name}</td>
-                                      <td>${b.item_price}*${b.item_qty}</td>
-                                      <td>
-                                        ${b.receiver_name}<br>
-                                        <span class="badge badge-dark">${b.receiver_phone_no}</span>
-                                      </td>
-                                      <td> <h1 class="badge badge-info">${b.way.refund_date}</h1></td>
-
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                            `;
-                        }
-                      })
-
-                      client_show+=`</div>
+                        client_show+=`</div>
                                   </div>
                                 </div>`;
-            
-              }
-            })
+
+
+
 
 
                     $('.client_show').html(client_show);

@@ -24,7 +24,7 @@
         @endif
         <div class="tile">
           <h3 class="tile-title d-inline-block">{{ __("Item List")}}</h3>
-          <a href="#" class="btn btn-sm btn-primary float-right wayassign" id="submit_assign">{{ __("Way Assign")}}</a>
+          <a href="#" class="btn btn-primary float-right wayassign" id="submit_assign">{{ __("Way Assign")}}</a>
 
           <div class="bs-component">
             <ul class="nav nav-tabs">
@@ -44,112 +44,33 @@
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Receiver Info")}}</th>
                         <th>{{ __("Expired Date")}}</th>
-                        <th>{{ __("Deposit")}}</th>
-                        <th>{{ __("Deli Fees")}}</th>
-                        <th>{{ __("Other Charges")}}</th>
+                        <th>{{ __("Amount")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        @foreach($items as $row)
-                        <td class="align-middle">
-                          <div class="animated-checkbox">
-                            <label class="mb-0">
-                              <input type="checkbox" name="assign[]" value="{{$row->id}}" data-codeno="{{$row->codeno}}"><span class="label-text"> </span>
-                            </label>
-                          </div>
-                        </td>
-                        <td class="align-middle">{{$row->codeno}}</td>
-                        <td class="align-middle">{{$row->pickup->schedule->client->user->name}}</td>
-                        <td class="text-danger align-middle">{{$row->township->name}}</td>
-                        <td class="align-middle">
-                          {{$row->receiver_name}} <span class="badge badge-dark">{{$row->receiver_phone_no}}</span>
-                        </td>
-                        <td class="align-middle">
-                          {{$row->expired_date}}
-                          @if($row->error_remark !== null)
-                            <span class="badge badge-warning">{{ __("date changed")}}</span>
-                          @endif
-                        </td>
-                        <td class="align-middle">{{number_format($row->item_price)}}</td>
-                        <td class="align-middle">{{number_format($row->delivery_fees)}}</td>
-                        <td class="align-middle">{{number_format($row->other_fees)}}</td>
-                        <td class="mytd align-middle">
-                          <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$row->id}}">{{ __("Detail")}}</a>
-                          <a href="{{route('items.edit',$row->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
-                          <form action="{{ route('items.destroy',$row->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">{{ __("Delete")}}</button>
-                          </form>
-                        </td>
-                      </tr>
-                      @endforeach
+                    <tbody class="itemtbody">
+                      
                     </tbody>
                   </table>
                 </div>
               </div>
               <div class="tab-pane fade" id="way">
                 <div class="table-responsive">
-                  <table class="table table-bordered dataTable">
+                  <table class="table table-bordered" id="onwaytable">
                     <thead>
                       <tr>
                         <th>{{ __("#")}}</th>
                         <th>{{ __("Codeno")}}</th>
                         <th>{{ __("Township")}}</th>
                         <th>{{ __("Delivery Man")}}</th>
+                        <th>{{ __("Assign Date")}}</th>
                         <th>{{ __("Expired Date")}}</th>
-                        <th>{{ __("Deposit")}}</th>
-                        <th>{{ __("Deli Fees")}}</th>
-                        <th>{{ __("Other Charges")}}</th>
+                        <th>{{ __("Amount")}}</th>
                         <th>{{ __("Actions")}}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      @php $i=1;
-                      @endphp
-                      @foreach($ways as $way) 
-                      @php $amount=number_format($way->item->amount) ;  @endphp
-                      <tr>
-                        <td class="align-middle">
-                          {{$i++}}
-                        </td>
-                        <td class="align-middle">{{$way->item->codeno}}  
-                          @if($way->status_code == '001')
-                            <span class="badge badge-info">{{'success'}}</span>
-                          @elseif($way->status_code == '002')
-                            <span class="badge badge-warning">{{'return'}}</span>
-                          @elseif($way->status_code == '003')
-                            <span class="badge badge-danger">{{'reject'}}</span>
-                          @endif
-                        </td>
-                        <td class="align-middle">{{$way->item->township->name}}</td>
-                        <td class="text-danger align-middle">
-                          {{$way->delivery_man->user->name}} 
-                            @foreach($data as $dd)
-                            @if($dd->id==$way->id)
-                            <span class="badge badge-info seen">seen</span>
-                            @endif
-
-                           @endforeach
-                        </td>
-                        <td class="align-middle">{{$way->item->expired_date}}</td>
-                        <td class="align-middle">{{number_format($way->item->item_price)}}</td>
-                        <td class="align-middle">{{number_format($way->item->delivery_fees)}}<br>
-                          @if($way->item->paystatus == '1') <span span class="badge badge-dark">FOC</span> @endif</td>
-
-                        <td class="align-middle">{{number_format($way->item->other_fees)}}</td>
-                        <td class="mytd align-middle">
-                          <a href="#" class="btn btn-sm btn-primary detail" data-id="{{$way->item->id}}">{{ __("Detail")}}</a>
-                          @if($way->status_code == '005')
-                            <a href="#" class="btn btn-sm btn-warning wayedit" data-id="{{$way->id}}">{{ __("Edit")}}</a>
-                            <a href="{{route('deletewayassign',$way->id)}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a>
-                          @endif
-                        </td>
-                      </tr>
                       
-                      @endforeach
                     </tbody>
                   </table>
                 </div>
@@ -173,10 +94,10 @@
               </div>
 
                <div class="table-responsive">
-                  <table class="table table-bordered" >
+                  <table class="table table-bordered">
                     <thead>
                       <tr>
-                        <th>{{ __("Item Cod")}}</th>
+                        <th>{{ __("Item Code")}}</th>
                         <th>{{ __("Receiver Name")}}</th>
                         <th>{{ __("Full Address")}}</th>
                         <th>{{ __("Receiver Phone No")}}</th>
@@ -289,7 +210,10 @@
           <p><strong>{{ __("Receiver Name")}}:</strong> <span id="rname">Ma Mon</span></p>
           <p ><strong >{{ __("Receiver Phone No")}}:</strong> <span id="rphone">09987654321</span></p>
           <p><strong >{{ __("Receiver Address")}}:</strong><span id="raddress"> No(3), Than Street, Hlaing, Yangon.</span></p>
+          <p><strong >{{ __("Item Price")}}:</strong><span id="rprice"> </span></p>
+          <p><strong >{{ __("Delivery Fee")}}:</strong><span id="rdfee"> </span></p>
           <p><strong>{{ __("Remark")}}:</strong> <span class="text-danger" id="rremark">Don't press over!!!!</span></p>
+          <p><strong >{{ __("Total Amount")}}:</strong><span id="rtotal"> </span></p>
 
           <p id="error_remark" class="d-none"></p>
 
@@ -306,27 +230,12 @@
     $(document).ready(function () {
       $("#export").hide();
       setTimeout(function(){ $('.myalert').hide(); showDiv2() },3000);
-      $('#checktable').dataTable({
-            "bPaginate": true,
-            "bLengthChange": true,
-            "bFilter": true,
-            "bSort": true,
-            "bInfo": true,
-            "bAutoWidth": true,
-            "bStateSave": true,
-            "bprocessing":true,
-            "bserverSide":true,
-            "aoColumnDefs": [
-                { 'bSortable': false, 'aTargets': [ -1,0] }
-            ]
-        });
-
       $('.wayassign').click(function () {
         var ways = [];
         var oTable = $('#checktable').dataTable();
         // console.log(oTable);
         var rowcollection = oTable.$("input[name='assign[]']:checked", {"page": "all"});
-        
+        console.log(rowcollection);
         $.each(rowcollection,function(index,elem){
           let wayObj = {id:$(elem).val(),codeno:$(elem).data('codeno')};
           ways.push(wayObj);
@@ -344,7 +253,7 @@
 
 
       //item detail
-      $(".dataTable tbody").on('click','.detail',function(){
+      $("#onwaytable tbody").on('click','.detail',function(){
         var id=$(this).data('id');
         //console.log(id);
         $('#itemDetailModal').modal('show');
@@ -363,7 +272,14 @@
           if(res.error_remark != null){
             $('#error_remark').removeClass('d-none')
             $("#error_remark").html(`<strong>Date Changed Remark:</strong> <span class="text-warning">${res.error_remark}</span>`)
-          }
+          };
+          var price =  `${thousands_separators(res.item_price)}`;
+          var deli_fee = `${thousands_separators(res.delivery_fees)}`;
+          var total = res.item_price + res.delivery_fees;
+          var total_amount = `${thousands_separators(total)}`;
+          $('#rtotal').html(total_amount);
+          $('#rprice').html(price);
+          $('#rdfee').html(deli_fee);
 
           $(".rcode").html(res.codeno);
         })
@@ -391,8 +307,14 @@
           if(res.error_remark != null){
             $('#error_remark').removeClass('d-none')
             $("#error_remark").html(`<strong>Date Changed Remark:</strong> <span class="text-warning">${res.error_remark}</span>`)
-          }
-
+          };
+          var price = `${thousands_separators(res.item_price)}`;
+          var deli_fee = `${thousands_separators(res.delivery_fees)}`;
+          var total = res.item_price + res.delivery_fees;
+          var total_amount = `${thousands_separators(total)}`;
+          $('#rtotal').html(total_amount);
+          $('#rprice').html(price);
+          $('#rdfee').html(deli_fee);
           $(".rcode").html(res.codeno);
         })
       })
@@ -411,22 +333,23 @@
       })
 
       var submit = $("#submit_assign").hide();
-      cbs = $('.dataTable tbody').on('click', 'input[name="assign[]"]', function () {
+      cbs = $('#checktable tbody').on('click', 'input[name="assign[]"]', function () {
       // cbs = $('input[name="assign[]').click(function() {
       // submit.toggle(cbs.is(":checked") , 2000);
       // submit.toggle(cbs.is(":checked"));
-        if($('.dataTable tbody :input[type="checkbox"]:checked').length>0)
+
+        if($('#checktable tbody :input[type="checkbox"]:checked').length>0)
         {
           $("#submit_assign").show();
         }else{
           $("#submit_assign").hide();
         }
         // submit.toggle();
-        console.log(submit)
+        //console.log(submit)
       });
       // console.log($cbs)
 
-      $(".wayedit").click(function(){
+    $("#onwaytable tbody").on('click','.wayedit',function(){
         $('#editwayAssignModal').modal('show');
         var id=$(this).data("id");
         //console.log(id);
@@ -461,7 +384,7 @@
                 <td>${v.item.receiver_address}</td>
                 <td>${v.item.receiver_phone_no}</td>
                 <td>${v.item.pickup.schedule.client.user.name}</br>(${v.item.pickup.schedule.client.phone_no})</td>
-                <td>${thousands_separators(v.item.amount)}</td>
+                <td>${v.item.amount}</td>
               </tr>`
         })
         $(".tbody").html(html);
@@ -476,9 +399,174 @@
 
     })
 
+      getdata();
+      getway();
+      function getdata(){   
+        var url="{{route('newitem')}}";
+        var i=1;
+        $('#checktable').dataTable({
+          "bPaginate": true,
+          "bLengthChange": true,
+          "bFilter": true,
+          "bSort": true,
+          "bInfo": true,
+          "bAutoWidth": true,
+          "bStateSave": true,
+          "aoColumnDefs": [
+          { 'bSortable': false, 'aTargets': [ -1,0] }
+          ],
+          "bserverSide": true,
+          "bprocessing":true,
+          "ajax": {
+            url: url,
+            type: "GET",
+            dataType:'json',
+          },
+          "columns": [
+         
+          {"data": null,
+          render:function(data, type, full, meta){
 
-    function thousands_separators(num)
-    {
+            return`<div class="animated-checkbox">
+            <label class="mb-0">
+            <input type="checkbox" name="assign[]" value="${data.id}" data-codeno="${data.codeno}"><span class="label-text"> </span>
+            </label>
+            </div>`
+          }
+        },
+        {"data":"codeno"},
+        {
+          "data":"pickup.schedule.client.user.name"
+        },
+        {
+          "data":"township.name"
+        },
+        {
+          "data":null,
+          render:function(data, type, full, meta){
+
+            return`${data.receiver_name} <span class="badge badge-dark">${data.receiver_phone_no}</span>`
+          }
+        },
+
+        {
+          "data":null,
+          render:function(data, type, full, meta){
+            if(data.error_remark!== null){
+              return `${data.expired_date}<br><span class="badge badge-warning">{{ __("date changed")}}</span>`
+            }else{
+              return data.expired_date;
+            }
+          }
+        },
+        
+
+        {
+          "data":null,
+          render:function(data, type, full, meta){
+            if(data.error_remark!== null){
+              return `${thousands_separators(data.item_price)}`
+            }else{
+              return thousands_separators(data.item_price);
+            }
+          }
+        },
+
+        
+
+        {
+          "data":null,
+          render:function(data, type, full, meta){
+           var editurl="{{route('items.edit',":id")}}"
+           editurl=editurl.replace(':id',data.id);
+           return`<a href="#" class="btn btn-primary detail" data-id="${data.id}">{{ __("Detail")}}</a> <a href="${editurl}" class="btn btn-warning">{{ __("Edit")}}</a>`
+         }
+       }
+
+       ],
+       "info":false
+     });
+        
+      }
+
+
+      function getway(){   
+        var url="{{route('onway')}}";
+        $('#onwaytable').dataTable({
+          "bPaginate": true,
+          "bLengthChange": true,
+          "bFilter": true,
+          "bSort": true,
+          "bInfo": true,
+          "bAutoWidth": true,
+          "bStateSave": true,
+          "aoColumnDefs": [
+          { 'bSortable': false, 'aTargets': [ -1,0] }
+          ],
+          "bserverSide": true,
+          "bprocessing":true,
+          "ajax": {
+            url: url,
+            type: "GET",
+            dataType:'json',
+          },
+          "columns": [
+          {"data":'DT_RowIndex'},
+          {"data": null,
+          render:function(data, type, full, meta){
+            if(data.status_code=="001"){
+              return `${data.item.codeno}<span class="badge badge-info">{{'success'}}</span>`
+            }else if(data.status_code=="002"){
+               return `${data.item.codeno}<span class="badge badge-warning">{{'return'}}</span>`
+            }else if(data.status_code=="003"){
+              return `${data.item.codeno}<span class="badge badge-danger">{{'reject'}}</span>`
+            }else{
+              return `${data.item.codeno}`
+            }
+            
+          }
+        },
+        {
+          "data":"item.township.name"
+        },
+        {
+          "data":"delivery_man.user.name"
+        },
+        {
+          "data":"created_at",
+          render:function(data){
+            var date=new Date(data);
+            date =date.toLocaleDateString(undefined, {year:'numeric'})+ '-' +date.toLocaleDateString(undefined, {month:'numeric'})+ '-' +date.toLocaleDateString(undefined, {day:'2-digit'})
+             return date;
+          }
+        },
+
+        {
+          "data":"item.expired_date"
+        },
+        {
+          "data":"item.item_price",
+          render:function(data){
+            return `${thousands_separators(data)}`
+          }
+        },
+        {
+          "data":null,
+           render:function(data, type, full, meta){
+            var wayediturl="{{route('deletewayassign',":id")}}"
+           wayediturl=wayediturl.replace(':id',data.id);
+            return`<a href="#" class="btn btn-primary detail" data-id="${data.item.id}">{{ __("Detail")}}</a>
+           <a href="#" class="btn btn-warning wayedit" data-id="${data.id}">{{ __("Edit")}}</a>
+          <a href="${wayediturl}" class="btn btn-danger" onclick="return confirm('Are you sure?')">{{ __("Delete")}}</a>`
+           }
+        }
+       ],
+       "info":false
+     });
+        
+      }
+
+        function thousands_separators(num){
       var num_parts = num.toString().split(".");
       num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       return num_parts.join(".");

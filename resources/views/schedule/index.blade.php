@@ -54,6 +54,7 @@
                     <tbody>
                       @php $i=1;
                         $array = array();
+                        $noarray = array();
                       @endphp
                       @foreach($schedules as $row)
                       <tr>
@@ -62,24 +63,19 @@
                           <td class="text-danger">{{$row->client->user->name}}</td>
                         @endrole
                         <td class="align-middle">{{\Carbon\Carbon::parse($row->pickup_date)->format('d/m/Y')}}</td>
-                        <td class="align-middle">{{$row->remark}}</td>
+                        <td class="align-middle">{{$row->client_id}}</td>
                         <td class="align-middle">{{$row->quantity}}</td>
                         <td class="align-middle">
                           @role('staff')
-                            @foreach($row->items as $item)
-                              @if($item->client_id != null)
-                                @php
-                                  array_push($array, 'true')
-                                @endphp
-                              @endif
-                            @endforeach
                           
-                            @if(count($array) == 0)
-                            <a href="#" class="btn btn-sm btn-primary assign" data-id="{{$row->id}}">{{ __("Assign")}}</a>
 
-                            <a href="#" class="btn btn-sm btn-info showfile" data-file="{{$row->file}}">{{ __("show file")}}</a>
-                            @else
+                            @if(count($row->items) > 0)
+
                             <a href="{{route('order_assign',$row->id)}}" class="btn btn-sm btn-primary">{{ __("order")}}</a>
+                            @else
+                              <a href="#" class="btn btn-sm btn-primary assign" data-id="{{$row->id}}">{{ __("Assign")}}</a>
+
+                              <a href="#" class="btn btn-sm btn-info showfile" data-file="{{$row->file}}">{{ __("show file")}}</a>
                             @endif
 
                           @endrole
@@ -114,7 +110,7 @@
                       </tr>
                     </thead>
                     <tbody class="assigntbody">
-                      @php $i=1; @endphp
+                      @php $i=1;$total=0; @endphp
                       @foreach($pickups as $row)
                       <tr>
                         <td class="align-middle">{{$i++}}</td>
@@ -135,18 +131,28 @@
                               {{count($row->items)}} Men
                           @endif
                         </td>
+                        @foreach($row->schedule->items as $item)
+                          @php
+                          if($item->client_id == null){
+                            $total += 1;
+                          }
+                          @endphp
+                        @endforeach
                         
                         <td class="align-middle">{{$row->schedule->quantity}}</td>
                         <td class="align-middle">
-                          @if($row->status==1 && $row->schedule->quantity > count($row->items))
+                          @if($row->status==1 && $row->schedule->quantity > count($row->items) && $total >0)
                             @role('staff')
                               <a href="{{route('items.collect',['cid'=>$row->schedule->client->id,'pid'=>$row->id])}}" class="btn btn-sm btn-primary">{{ __("Collect")}}</a>
                             @endrole
                             @role('client')
                               <button type="button" class="btn btn-sm btn-info">{{ __("Brought")}}</button>
                             @endrole
-                          @elseif($row->status == 1 && $row->schedule->quantity == count(($row->items)))
+                          @elseif($row->status == 1 && $row->schedule->quantity == count(($row->items)) )
                             <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
+                          @elseif($row->status == 1)
+                            <button type="button" class="btn btn-sm btn-info">{{ __("completed")}}</button>
+
                           @elseif($row->status==2)
                             <a href="{{route('checkitem',$row->id)}}" class="btn btn-sm btn-danger">{{ __("fail")}}</a>
                           @elseif($row->status==3)
@@ -155,7 +161,7 @@
                             <button type="button" class="btn btn-sm btn-danger">{{ __("pending")}}</button>
                           @endif
 
-                          @if($row->status != 1 || $row->schedule->quantity != count(($row->items)))
+                          @if($row->status != 1 || $row->schedule->quantity != count(($row->items)) && $total >0)
                             <a href="{{route('schedules.edit',$row->schedule->id)}}" class="btn btn-sm btn-warning">{{ __("Edit")}}</a>
                             <form action="{{ route('schedules.destroy',$row->schedule->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                               @csrf

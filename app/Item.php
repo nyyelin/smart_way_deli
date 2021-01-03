@@ -26,6 +26,11 @@ class Item extends Model
     return $this->hasOne('App\Way');
   }
 
+  public function reportway()
+  {
+    return $this->hasOne('App\Way')->withTrashed();
+  }
+
   public function staff()
   {
     return $this->belongsTo('App\Staff');
@@ -42,5 +47,11 @@ class Item extends Model
   public function client($value='')
   {
     return $this->belongsTo('App\Client');
+  }
+
+
+  public function schedules($value='')
+  {
+    return $this->belongsTo('App\Schedule');
   }
 }

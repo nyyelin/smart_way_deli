@@ -47,8 +47,7 @@
 
     <div class="row mt-4 client_show">
       
-              
-   
+
     </div>
   </main>
 @endsection
@@ -73,206 +72,147 @@
         var total=0;
         var return_data = '';
         var array=new Array();
-
+        var amount = 0;
+        var name = '';
+        var cname = '';
+        var phone ='';
+        var address ='';
+        var refund_data = '';
+        var name = '';
+        var contact_person = '';
+        var phone = '';
+        var address = '';
         $.post('report_search',{date:date,client_id:client_id},function(res){
-             
           
+          var html = '';
+          var total = 0;
+          var amount = 0;
+          var other_charge = 0;
+          var delivery_fee = 0;
+          var carry_fee = 0;
+          var service_charge = 0;
+          var guest_amount = 0;
+          var pickupd_id = new Array();
+          var item_array = new Array();
+
           if(res.length > 0){
-            $.each(res,function(key,schedule){
-                if(schedule.items.length > 0){
 
-                client_show += `
-                <div class="col-md-10 mx-auto">
-                <div class="card">
-                  <div class="card-body">
+            $.each(res,function(i,v){
+              console.log(v);
+              if(v.status_code == '001'){
+                if(v.item !== null){
 
-                    <div class="row mx-auto ">
-                      <div class="col-md-6 col-sm-12">
-                      <h5 class="ml-5 pl-4">Client Info</h5>
-                        <div class="row">
+                  pickupd_id.push(v.item.pickup.id);
 
-                          <div class="col-md-4 col-sm-6">
+                  name = v.item.client.user.name;
+                  contact_person = v.item.client.contact_person;
+                  phone = v.item.client.phone_no;
+                  address = v.item.client.address;
+                  item_array.push(v.item.client_id);
+                  delivery_fee += v.item.delivery_fees;
+                  other_charge += v.item.other_fees;
+                 $.each(v.item.pickup.expenses,function(a,b){
+                  if(b.expense_type_id == 5){
+                    amount = b.amount;
+                    guest_amount = b.guest_amount;
+                  }
+                 })
+                }
+                 
+              }
+            })
 
-                            <label>Client Name</label>
+            $.unique(pickupd_id);
 
-                          </div>
+            service_charge = item_array.length * 100;
+            total += amount-(guest_amount + delivery_fee + other_charge + service_charge);
 
-                          <div class="col-md-4 col-sm-6">
 
-                            <label>${schedule.client.user.name}</label>
+            html += `<div class="col-md-10 mx-auto">
+                      <div class="card">
+                        <div class="card-body">
+
+                          <div class="row mx-auto ">
+                            <div class="col-md-12 col-sm-12 ">
+
+                                  <label class="d-inline-block float-right"><i class="fa fa-phone pr-2"></i>${phone}</label>
+                                
+                              <div class="row">
+
+                                <div class="col-md-6 col-sm-6">
+
+                                  <i class="fa fa-user pr-2 "></i>
+                                  <label class="font-weight-bold">${name}</label><label class="pl-3">( ${contact_person} )</label>
+                                  
+                                </div>
+       
+                              </div>
+
                             
+                              <div class="row mb-3 ">
+
+                                <div class="col-md-6 col-sm-6">
+
+                                  <i class="fa fa-home pr-2"></i><label>${address}</label>
+                                  
+                                </div>
+                              </div>
+
                           </div>
                         </div>
 
-                        <div class="row">
 
-                          <div class="col-md-4 col-sm-6">
+                          <div class="row mx-auto mt-3">
+                            <div class="col-md-12">
+                              <table class="table ">
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>Amount</th>
+                                    <th>Service Charges</th>
+                                    <th>Delivery Fees</th>
+                                    <th>Guest Amount</th>
+                                    <th>Other Charges</th>
+                                    
+                                    <th>Total</th>
 
-                            <label>Contact Person</label>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>#</td>
+                                    <td>${amount}</td>
+                                    <td>${service_charge}</td>
+                                    <td>${delivery_fee}</td>
+                                    <td>${guest_amount}</td>
+                                    <td>${other_charge}</td>
+                                    <td> <form action="{{route('report_detail_show')}}" method="post">
+                                      @csrf
+                                      <input type="hidden" name="pickup_id" value="${pickupd_id}">
+                                      <input type="hidden" name="cname" value="${name}">
+                                      <input type="hidden" name="contact_person" value="${contact_person}">
+                                      <input type="hidden" name="phone" value="${phone}">
+                                      <input type="hidden" name="address" value="${address}">
 
+
+                                      <button type="submit" class="btn btn-info rounded circle text-light display-4">${total}</button>
+
+                                    </form></td>
+
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
+                      
 
-                          <div class="col-md-4 col-sm-6">
 
-                            <label>${schedule.client.contact_person}</label>
-                            
-                          </div>
                         </div>
-
-                        <div class="row">
-
-                          <div class="col-md-4 col-sm-6">
-
-                            <label>Client Phone_no</label>
-
-                          </div>
-
-                          <div class="col-md-4 col-sm-6">
-
-                            <label>${schedule.client.phone_no}</label>
-                            
-                          </div>
-                        </div>
-
-                        <div class="row">
-
-                          <div class="col-md-4 col-sm-6">
-
-                            <label>Client Address</label>
-
-                          </div>
-
-                          <div class="col-md-4 col-sm-6">
-
-                            <label>${schedule.client.address}</label>
-                            
-                          </div>
-                        </div>
-
-                    </div>
-                  </div>`;
-                  $.each(schedule.items,function(k,v){
-
-                    if(v.way && v.way.status_code == '001'){
-                    deli_fee += v.delivery_fees;
-
-                    array.push(v.way.status_code);
-                    if(v.other_fees > 0){
-
-                    other_charge += v.other_fees;
-
-                        }
-
-                      }
-
-                    })
-
-                    service_charge += array.length*100;
-                    
-
-                    total += schedule.amount-(deli_fee+other_charge+service_charge);
-
-
-                    client_show += `
-                    <div class="row mx-auto mt-3">
-                      <div class="col-md-12">
-                        <table class="table ">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>Amount</th>
-                              <th>Service Charges</th>
-                              <th>Delivery Fees</th>
-                              <th>Other Charges</th>
-                              
-                              <th>Total</th>
-
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>#</td>
-                              <td>${schedule.amount}</td>
-                              <td>${service_charge}</td>
-                              <td>${deli_fee}</td>
-                              <td>${other_charge}</td>
-                              <td> <h1 class="badge badge-info">${total}</h1></td>
-
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </div>`;
 
+                    $('.client_show').html(html);
 
-                      $.each(schedule.items,function(a,b){
-                        if(b.way && b.way.status_code == '002'){
-                            client_show += `
-                            <h3>Return list</h3>
-                            <div class="row mx-auto mt-3">
-                              <div class="col-md-12">
-                                <table class="table ">
-                                  <thead>
-                                    <tr>
-
-                                      <th>#</th>
-                                      <th>Codeno</th>
-                                      <th>Item Name</th>
-                                      <th>Price * Qty</th>
-                                      <th>Reciver info</th>
-                                      <th>Refund Date</th>
-                                      
-                                      
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td>#</td>
-                                      <td>${b.codeno}</td>
-                                      <td>${b.item_name}</td>
-                                      <td>${b.item_price}*${b.item_qty}</td>
-                                      <td>
-                                        ${b.receiver_name}<br>
-                                        <span class="badge badge-dark">${b.receiver_phone_no}</span>
-                                      </td>
-                                      <td> <h1 class="badge badge-info">${b.way.refund_date}</h1></td>
-
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                            `;
-                        }
-                      })
-
-                      client_show+=`</div>
-                                  </div>
-                                </div>`;
-            }
-              
-            })
-
-                    $('.client_show').html(client_show);
-          }else{
-
-
-            client_show += `<div class="col-md-10 mx-auto">
-                              <div class="card">
-                                <div class="card-body">
-
-                                  
-                                      <div class="row">
-                                      <div class="col-md-12">
-                                          <h3 class="text-center">No Data</h3>
-                                      </div>
-                                      </div>
-                                    
-                                </div>
-                              </div>
-                            </div>`;
-
-            $('.client_show').html(client_show);
           }
         })
     })

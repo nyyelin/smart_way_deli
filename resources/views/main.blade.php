@@ -149,7 +149,7 @@
          </li>
 
          <li>
-           <a class="app-menu__item {{ Request::is('report') ? 'active' : '' }}" href="{{route('report')}}"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">{{ __("Report")}}</span></a>
+           <a class="app-menu__item {{ Request::is('report' || 'report_detail_show') ? 'active' : '' }} " href="{{route('report')}}"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">{{ __("Report")}}</span></a>
          </li>
         @endrole
 
@@ -168,7 +168,7 @@
         <li><a class="app-menu__item {{ Request::is('pickup_history') ? 'active' : '' }}" href="{{route('pickup_history')}}"><i class="app-menu__icon fa fa-list-alt"></i><span class="app-menu__label">{{ __("Pickup History")}}</span></a></li>
 
          <li>
-           <a class="app-menu__item {{ Request::is('report') ? 'active' : '' }}" href="{{route('report')}}"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">{{ __("Report")}}</span></a>
+           <a class="app-menu__item {{ Request::is('report'|| 'report_detail_show') ? 'active' : '' }}" href="{{route('report')}}"><i class="app-menu__icon fa fa-file"></i><span class="app-menu__label">{{ __("Report")}}</span></a>
          </li>
         @endrole
 

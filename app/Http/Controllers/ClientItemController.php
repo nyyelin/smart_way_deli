@@ -15,6 +15,8 @@ use App\Township;
 use App\Deliveryman;
 use App\Pickup;
 use App\Way;
+use App\Expense;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class ClientItemController extends Controller
@@ -257,7 +259,7 @@ class ClientItemController extends Controller
 
     public function order_assign_store(Request $request,$id)
     {
-      dd($request);
+      // dd($request);
       $date = Carbon\Carbon::today();
       $date->toDateString();
       
@@ -306,7 +308,6 @@ class ClientItemController extends Controller
       foreach ($deliverymen as $deliveryman) {
           list($k , $v) = explode('=>', $deliveryman);
           $deliveryman_array[$k] = $v;
-          
       }
 
 
@@ -315,13 +316,13 @@ class ClientItemController extends Controller
             list($k , $v) = explode('=>', $other_charge);
             $other_charge_array[$k] = $v;
           }
-          
       }
 
       foreach ($deliveryfees as $deliveryfee) {
           list($k , $v) = explode('=>', $deliveryfee);
           $deliveryfee_array[$k] = $v;
       }
+
       $schedule = Schedule::find($id);
       $schedule->status=1;
       $schedule->save();
@@ -333,11 +334,20 @@ class ClientItemController extends Controller
       $pickup->save();
 
       $pickup_id = $pickup->id;
+      $expense = new Expense;
+      $expense->amount = $request->amount;
+      $expense->guest_amount = $request->guest_amount;
+      $expense->expense_type_id = 5;
+      $expense->client_id = $request->client_id;
+      $expense->staff_id = Auth::user()->staff->id;
+      $expense->pickup_id = $pickup_id;
+      $expense->city_id = 1;
+      $expense->status = 2;
+      $expense->description = "Carry Fee";
+      $expense->save();
 
       for ($i=0; $i < count($item_id); $i++) { 
 
-
-        
           $item = Item::find($item_id[$i]);
 
           if(array_key_exists($item_id[$i],$mycity_array )){
@@ -383,7 +393,7 @@ class ClientItemController extends Controller
 
           $way = new Way;
           $way->status_code = '005';
-          $way->delivery_date = $date;
+          // $way->delivery_date = $date;
           $way->item_id = $item_id[$i];
           if(array_key_exists($item_id[$i],$deliveryman_array)){
 
@@ -397,6 +407,17 @@ class ClientItemController extends Controller
 
       return redirect()->route('schedules.index')->with("successMsg",'Client order assign complete!');
      
+
+    }
+
+
+    public function client_new_item($value='')
+    {
+        $id = Auth::user()->client->id;
+        $items = Item::where('client_id','=',$id)->with('client.user')->where('schedule_id','=',null)->get();
+
+        // dd($items);
+       return Datatables::of($items)->addIndexColumn()->toJson();
 
     }
 

@@ -33,6 +33,7 @@ use App\Schedule;
 use App\Staff;
 use App\Transaction;
 use PDF;
+use App\Township;
 
 class MainController extends Controller
 {
@@ -137,15 +138,16 @@ class MainController extends Controller
   {
 
    // dd($delayitems);
-       $deliverymen = DeliveryMan::all();
+     $deliverymen = DeliveryMan::all();
+     $townships = Township::all();
      $mytime = Carbon\Carbon::now();
     $delayitems=Item::doesntHave('way')->whereDate('created_at','!=', Carbon\Carbon::today())->get();
-    return view('dashboard.delay_list',compact('delayitems','deliverymen'));
+    return view('dashboard.delay_list',compact('delayitems','deliverymen','townships'));
   }
 
   public function delaycount(){
     $mytime = Carbon\Carbon::now();
-    $delayitems=Item::doesntHave('way')->whereDate('created_at','!=', Carbon\Carbon::today())->get();
+    $delayitems=Item::doesntHave('way')->where('township_id','!=',null)->whereDate('created_at','!=', Carbon\Carbon::today())->get();
     $delaycount=count($delayitems);
     return $delaycount;
 
@@ -976,7 +978,7 @@ public function profit(Request $request){
       })->where("status",1)->get();
       //dd($pickups);
     }
-      return view('dashboard.pickup_history',compact('clients','pickups'));
+      return view('dashboard.pickup_history',compact('clients','pickups','rolename'));
     }
 
   public function pickupbyclient(Request $request){
@@ -987,27 +989,38 @@ public function profit(Request $request){
     $role=Auth::user()->roles()->first();
     $rolename=$role->name;
     $pickups="";
+
     if($rolename=="client"){
       $client_id=Auth::user()->client->id;
      // dd($client_id);
-      $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
+      $pickups=Pickup::with('schedule.client.user')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
         $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
       })->where("status",1)->get();
+
+
     }else if($rolename=="staff"){
+
+
       if($client_id==null){
-       $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($sdate,$edate){
+       $pickups=Pickup::with('schedule.client.user')->whereHas('schedule',function ($query) use ($sdate,$edate){
         $query->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
       })->where("status",1)->get();
+
+
      }else if($sdate==null && $edate==null){
-       $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id){
+       $pickups=Pickup::with('schedule.client.user')->whereHas('schedule',function ($query) use ($client_id){
         $query->where('client_id', $client_id);
       })->where("status",1)->get();
+
+
      }else{
-       $pickups=Pickup::with('schedule')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
-        $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59']);
+       $pickups=Pickup::with('schedule.client.user')->whereHas('schedule',function ($query) use ($client_id,$sdate,$edate){
+        $query->where('client_id', $client_id)->whereBetween('pickup_date', [$sdate.' 00:00:00',$edate.' 23:59:59'])->with('client');
       })->where("status",1)->get();
      }
    }
+
+      // dd($pickups);
      return Datatables::of($pickups)->addIndexColumn()->toJson();
  }
 
@@ -1142,22 +1155,48 @@ public function profit(Request $request){
     $date = $request->date;
     $client_id = $request->client_id;
 
-    $schedule = Schedule::where('status',1)->where('pickup_date',$date)->where('client_id',$client_id)->with(array('client'=>function($query){
-      $query->with('user')->get();
-    }))->with(array('items'=>function($q){
-      $q->with('way')->get();
-    }))->get();
-
-    // $way = Way::where('delivery_date',$date)->with(array('item'=>function($q) use ($client_id){
-    //   $q->where('client_id',$client_id)->get();
-    //   $q->with(array('client'=>function($query){
-    //     $query->with('user')->get();
-    //   }))->get();
+    // $schedule = Schedule::where('status',1)->where('pickup_date',$date)->where('client_id',$client_id)->with(array('client'=>function($query){
+    //   $query->with('user')->get();
+    // }))->with(array('items'=>function($q){
+    //   $q->with('way')->get();
     // }))->get();
-    // dd($schedule);
 
-   return response()->json($schedule);
+    $way = Way::whereDate('created_at',$date)->with(array('item'=>function($q) use ($client_id){
+      $q->where('client_id',$client_id)->where('client_id','!=',null)->with(array('pickup'=>function($query){
+        $query->with('expenses')->get();
+      }))->with('schedules')->get();
 
+      $q->with(array('client'=>function($query){
+        $query->with('user')->get();
+      }))->get();
+
+      
+
+    
+
+    }))->get();
+   
+
+   return response()->json($way);
+
+
+  }
+
+
+  public function report_detail_show(Request $request)
+  {
+
+    $cname = $request->cname;
+    $contact_person = $request->contact_person;
+    $phone = $request->phone;
+    $address = $request->address;
+    $pickup_id = explode(',', $request->pickup_id);
+
+    foreach ($pickup_id as $value) {
+      $items[] = Item::where('pickup_id',$value)->get();
+    }
+
+    return view('report.report_detail_show',compact('items','cname','contact_person','phone','address'));
 
   }
 
@@ -1168,6 +1207,9 @@ public function profit(Request $request){
     
     return view('report.client_daily_report');
   }
+
+
+
 
 
   public function client_report_search(Request $request)

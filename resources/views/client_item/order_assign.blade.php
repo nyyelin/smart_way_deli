@@ -35,7 +35,25 @@
                 
               
                  <div class="accordion" id="accordionExample">
+                  @php
+                    $amount = 0;
+                    $guest_amount = 0;
+                  @endphp
                   @foreach($schedule->items as $key=> $item)
+                  @php
+
+                    $amount+= $item->item_price;
+                    if($item->paystatus == 2){
+                      $guest_amount += $item->item_price;
+                    }
+
+                  @endphp
+
+                    <input type="hidden" name="amount" value="{{$amount}}">
+                    <input type="hidden" name="guest_amount" value="{{$guest_amount}}">
+                    <input type="hidden" name="client_id" value="{{$schedule->client_id}}">
+
+
                     <div class="card">
                       <div class="card-header" id="headingOne">
                         <h2 class="mb-0">
@@ -289,8 +307,7 @@
 
                   $.each(v.delivery_men,function(a,b){
 
-                  html+= `
-                                   
+                  html+= `         
                           <option value="${item_id}=>${b.id}">${b.user.name}</option>`;
                     });
 
@@ -299,7 +316,6 @@
                     $.each(res['deliverymen'],function(c,d){
 
                         deliveryman += `
-                                   
                             <option value="${item_id}=>${d.id}">${d.user.name}</option>`
                       })
                    }

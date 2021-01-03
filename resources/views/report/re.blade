@@ -1,0 +1,173 @@
+$.each(res,function(key,schedule){
+                if(schedule.items.length > 0){
+                  name =`${schedule.client.user.name}`;
+                  cname = `${schedule.client.contact_person}`;
+                  address =`${schedule.client.address}`;
+                  phone =`${schedule.client.phone_no}`
+                
+                  $.each(schedule.items,function(k,v){
+
+                    if(v.way && v.way.status_code == '001'){
+                    deli_fee += v.delivery_fees;
+
+                    array.push(v.way.status_code);
+                    if(v.other_fees > 0){
+
+                    other_charge += v.other_fees;
+
+                        }
+
+                      }
+
+                    })
+
+                    service_charge += array.length*100;
+                    amount += schedule.amount;
+
+                    total += schedule.amount-(deli_fee+other_charge+service_charge);
+
+                      $.each(schedule.items,function(a,b){
+                        if(b.way && b.way.status_code == '002'){
+                            refund_data += `
+                            <h3>Return list</h3>
+                            <div class="row mx-auto mt-3">
+                              <div class="col-md-12">
+                                <table class="table ">
+                                  <thead>
+                                    <tr>
+
+                                      <th>#</th>
+                                      <th>Codeno</th>
+                                      <th>Item Name</th>
+                                      <th>Price * Qty</th>
+                                      <th>Reciver info</th>
+                                      <th>Action</th>
+                                      
+                                      
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>#</td>
+                                      <td>${b.codeno}</td>
+                                      <td>${b.item_name}</td>
+                                      <td>${b.item_price}*${b.item_qty}</td>
+                                      <td>
+                                        ${b.receiver_name}<br>
+                                        <span class="badge badge-dark">${b.receiver_phone_no}</span>
+                                      </td>
+                                      <td> <h1 class="badge badge-danger">return</h1></td>
+
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                            `;
+                        }
+                      })
+
+                      
+            }
+              
+            })
+
+
+
+
+            client_show += `
+                <div class="col-md-10 mx-auto">
+                <div class="card">
+                  <div class="card-body">
+
+                    <div class="row mx-auto ">
+                      <div class="col-md-12 col-sm-12 ">
+
+                            <label class="d-inline-block float-right"><i class="fa fa-phone pr-2"></i>${phone}</label>
+                          
+                        <div class="row">
+
+                          <div class="col-md-6 col-sm-6">
+
+                            <i class="fa fa-user pr-2 "></i>
+                            <label class="font-weight-bold">${name}</label><label class="pl-3">( ${cname} )</label>
+                            
+                          </div>
+ 
+                        </div>
+
+                      
+                        <div class="row mb-3 ">
+
+                          <div class="col-md-6 col-sm-6">
+
+                            <i class="fa fa-home pr-2"></i><label>${address}</label>
+                            
+                          </div>
+                        </div>
+
+                    </div>
+                  </div>
+
+
+                    <div class="row mx-auto mt-3">
+                      <div class="col-md-12">
+                        <table class="table ">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Amount</th>
+                              <th>Service Charges</th>
+                              <th>Delivery Fees</th>
+                              <th>Other Charges</th>
+                              
+                              <th>Total</th>
+
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>#</td>
+                              <td>${amount}</td>
+                              <td>${service_charge}</td>
+                              <td>${deli_fee}</td>
+                              <td>${other_charge}</td>
+                              <td> <h1 class="badge badge-info">${total}</h1></td>
+
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    ${refund_data}
+                    `;
+
+
+                    client_show+=`</div>
+                                  </div>
+                                </div>`;
+
+
+              $('.client_show').html(client_show);
+          }else{
+
+
+            client_show += `<div class="col-md-10 mx-auto">
+                              <div class="card">
+                                <div class="card-body">
+
+                                  
+                                      <div class="row">
+                                      <div class="col-md-12">
+                                          <h3 class="text-center">No Data</h3>
+                                      </div>
+                                      </div>
+                                    
+                                </div>
+                              </div>
+                            </div>`;
+
+
+
+
+            $('.client_show').html(client_show);

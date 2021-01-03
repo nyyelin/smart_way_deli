@@ -99,6 +99,9 @@ Route::middleware('auth')->group(function () {
   Route::post('storeandassignschedule', 'ScheduleController@storeandassignschedule')->name('schedules.storeandassign');
 
   Route::resource('items', 'ItemController');
+  Route::get('newitem','ItemController@newitem')->name('newitem');
+  Route::get('onway','ItemController@onway')->name('onway');
+
   Route::get('items/collectitem/{cid}/{pid}','ItemController@collectitem')->name('items.collect');
   Route::post('itemdetail','ItemController@itemdetail')->name('itemdetail');
   Route::post('wayassign','ItemController@assignWays')->name('wayassign');
@@ -133,6 +136,8 @@ Route::middleware('auth')->group(function () {
   Route::get('order_assign\{id}','ClientItemController@order_assign')->name('order_assign');
   Route::post('deliverymanbytownship','ClientItemController@deliverymanbytownship')->name('deliverymanbytownship');
   Route::post('order_assign_store\{id}','ClientItemController@order_assign_store')->name('order_assign_store');
+  Route::get('client_new_item','ClientItemController@client_new_item')->name('client_new_item');
+
 
 
   // For Report
@@ -140,7 +145,9 @@ Route::middleware('auth')->group(function () {
   Route::post('report_search','MainController@report_search')->name('report_search');
   Route::get('cleint_daily_report','MainController@cleint_daily_report')->name('cleint_daily_report');
   Route::post('client_report_search','MainController@client_report_search')->name('client_report_search');
-
+  Route::post('report_detail_show','MainController@report_detail_show')->name('report_detail_show');
+  
+  
 
 
 

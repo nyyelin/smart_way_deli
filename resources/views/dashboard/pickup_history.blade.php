@@ -21,6 +21,8 @@
       <div class="row">
               <div class="form-group col-md-3">
               <label for="InputStartDate">{{ __("Start Date")}}:</label>
+              <input type="hidden" name="" value="{{$rolename}}" class="role_name">
+
               <input type="date" class="form-control" id="InputStartDate" name="start_date">
             </div>
             <div class="form-group col-md-3">
@@ -50,6 +52,9 @@
                 <tr>
                   <th>{{ __("#")}}</th>
                   <th>{{ __("Pickup Date")}}</th>
+                 
+                  <th>{{ __("Client Name")}}</th>
+                  
                   <th>{{ __("Quantity")}}</th>
                   <th>{{ __("Amount")}}</th>
                   <th>{{ __("Actions")}}</th>
@@ -63,6 +68,7 @@
                 <tr>
                   <td>{{$i++}}</td>
                   <td>{{$row->schedule->pickup_date}}</td>
+                  <td>{{Auth::user()->client->user->name}}</td>
                   <td>{{$row->schedule->quantity}}</td>
                   <td>{{$row->schedule->amount}}</td>
                   
@@ -105,6 +111,8 @@
 
     $('.search_btn').click(function () {
       //alert("ok");
+        var role_name = $('.role_name').val();
+        // alert(role_name);
         var sdate = $('#InputStartDate').val();
         var edate = $('#InputEndDate').val();
         var client_id=$("#InputClient").val();
@@ -124,8 +132,17 @@
             dataType:'json',
         },
         "columns": [
-         {"data":'DT_RowIndex'},
-        { "data": "schedule.pickup_date",},
+        { "data":'DT_RowIndex'},
+        { "data": "schedule.pickup_date"},
+        { "data" : "schedule.client.user.name",
+          // render:function(data){
+          //   if(role_name == 'staff'){
+          //     return data;
+          //   }else if(role_name == 'client'){
+          //     return 'Yours';
+          //   }
+          // }
+        },
         { "data": "schedule.quantity" },
         { "data": "schedule.amount" },
         { "data": "id",
